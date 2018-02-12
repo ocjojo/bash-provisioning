@@ -20,7 +20,7 @@ create_ssh_user() {
 	fi
 
 	for arg; do
-		if [[ "$arg" == "root" ]] && [[ -z "$(cat /etc/sudoers 2>&1 | grep ^$user)"]] ; then
+		if [[ "$arg" == "root" ]] && [[ -z "$(cat /etc/sudoers 2>&1 | grep ^$user)" ]] ; then
 			echo -e "\n$user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers	
 		fi
 		if [[ -f $arg ]]; then

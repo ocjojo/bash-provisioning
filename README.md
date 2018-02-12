@@ -51,6 +51,7 @@ This is a list of functions `provision.sh` provides:
 
 - `adminer_install /path/to/install/dir` installs adminer
 - `composer_install` installs composer and makes it available in $PATH
+- `jre_install` installs jre 1.8
 - `kick [start|stop|restart|enable|status] service1 [service2 ...]`  
   replacement for systemctl/service extended for multiple services
 - `network_check` to check wether internet is available

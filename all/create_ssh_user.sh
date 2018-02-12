@@ -15,8 +15,8 @@ create_ssh_user() {
 	SSH_USERS=$(cat /etc/ssh/sshd_config 2>&1 | grep '^AllowUsers')
 	if [[ "$SSH_USERS" == "" ]] || [[ $SSH_USERS =~ ^#.* ]]; then
 	  echo -e "\nAllowUsers $user" >> /etc/ssh/sshd_config
-	else
-		sed "s/\(^AllowUsers.*\)/\1 $user/" /etc/ssh/sshd_config
+	elif ! [[ $SSH_USERS =~ .*$user.* ]] ; then
+		sed -i "s/\(^AllowUsers.*\)/\1 $user/" /etc/ssh/sshd_config
 	fi
 
 	for arg; do

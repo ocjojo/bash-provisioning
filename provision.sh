@@ -28,16 +28,16 @@ network_detection() {
   # skip a few things further in provisioning rather than create a bunch of errors.
   if [[ "$(wget --tries=3 --timeout=5 --spider --recursive --level=2 http://google.com 2>&1 | grep 'connected')" ]]; then
     echo "Network connection detected..."
-    return "Connected"
+    return 1
   else
     echo "Network connection not detected. Unable to reach google.com..."
-    return "Not Connected"
+    return 0
   fi
 }
 
 network_check() {
-  if [[ ! "$(network_detection)" == "Connected" ]]; then
-    return ""
+  if [[ ! "$(network_detection)" == "1" ]]; then
+    return 0
   else
   	return 1
   fi

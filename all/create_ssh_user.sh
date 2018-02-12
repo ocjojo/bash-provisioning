@@ -14,14 +14,14 @@ create_ssh_user() {
 	# allow new user in SSH
 	SSH_USERS=$(cat /etc/ssh/sshd_config 2>&1 | grep '^AllowUsers')
 	if [[ "$SSH_USERS" == "" ]] || [[ $SSH_USERS =~ ^#.* ]]; then
-	  echo "AllowUsers $user" >> /etc/ssh/sshd_config
+	  echo -e "\nAllowUsers $user" >> /etc/ssh/sshd_config
 	else
 		sed "s/\(^AllowUsers.*\)/\1 $user/" /etc/ssh/sshd_config
 	fi
 
 	for arg; do
-		if [[ "$arg" == "root" ]] ; then
-			echo "$user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers	
+		if [[ "$arg" == "root" ]] && [[ -z "$(cat /etc/sudoers 2>&1 | grep ^$user)"]] ; then
+			echo -e "\n$user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers	
 		fi
 		if [[ -f $arg ]]; then
 			mv $arg /home/$user/.ssh/

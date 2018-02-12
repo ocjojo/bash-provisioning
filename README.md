@@ -59,6 +59,7 @@ This is a list of functions `provision.sh` provides:
 - `secure_mysql <MYSQL_ROOT_PW>` secures the mysql server and configures the root password.
 - `secure_sshd` generates a secure sshd_config
 - `summary` prints a summary of provisioning time
+- `create_ssh_user username [root] [path/to/authorized_keys]` creates a user [with root priviledge] allows ssh login [and adds authorized_keys]
 
 ## Contribute
 Feel free to contribute by creating issues and/or pull requests.

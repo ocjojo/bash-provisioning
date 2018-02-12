@@ -15,7 +15,7 @@ create_ssh_user() {
 
 	# allow new user in SSH
 	SSH_USERS=$(cat /etc/ssh/sshd_config 2>&1 | grep '^AllowUsers')
-	if [[ "$SSH_USERS" == "" ]] || [[ $SSH_USERS =~ ^#.* ]]; then
+	if [[ "$SSH_USERS" == "" ]]; then
 		echo "Adding $user to sshd_config."
 	  echo -e "\nAllowUsers $user" >> /etc/ssh/sshd_config
 	elif ! [[ $SSH_USERS =~ .*$user.* ]] ; then

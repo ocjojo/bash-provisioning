@@ -3,9 +3,8 @@
 This provides a collection of shell scripts to simplify provisioning a new server.
 
 ## Usage
-1. Clone this repo.
-2. Create a shell script that sources `provision.sh`.
-3. Call helper functions.
+1. Create a shell script that sources `provision.sh`.
+2. Call helper functions.
 
 Sample script `setup.sh`
 
@@ -14,6 +13,13 @@ Sample script `setup.sh`
 
 echo "MySQL Root Password:"
 read MYSQL_ROOT_PW
+
+yum install -y git nano
+if [[ ! -d "bash-provisioning" ]]; then
+  git clone git@github.com:ocjojo/bash-provisioning.git
+else
+  cd bash-provisioning && git fetch && git reset --hard origin/master && cd ..
+fi
 
 # Packages to install
 package_check_list=(
@@ -31,7 +37,7 @@ package_check_list=(
 # extend here ...
 
 # Call other scripts
-. provision.sh
+source ./bash-provisioning/provision.sh
 if ! network_check ; then 
 	package_install
 	secure_mysql $MYSQL_ROOT_PW

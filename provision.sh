@@ -36,8 +36,8 @@ network_detection() {
 }
 
 network_check() {
-  if [[ ! "$(network_detection)" == "1" ]]; then
-    return 0
+  if [[ "$(network_detection)" != "1" ]]; then
+    return ""
   else
   	return 1
   fi

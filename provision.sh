@@ -63,3 +63,7 @@ fi
 
 # source other files
 for f in $PROV_DIR/all/*.sh; do source $f; done
+
+if [ -d $PROV_DIR/private ]; then
+  for f in $PROV_DIR/private/*.sh; do source $f; done
+fi

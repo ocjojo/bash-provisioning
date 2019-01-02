@@ -1,31 +1,33 @@
 #!/bin/bash
 
 ###############################
-# Provision
+# Helper
 # provides helper functions:
 # - function_exists
-# - network_check
+# - is_internet_available
+# - run_install
 # - summary
 # Sources all helpers (os specific)
 ###############################
 
 [ -n "$PROVISIONER" ] && return || readonly PROVISIONER=1
 
+# save for later use
+start_seconds="$(date +%s)"
+HELPER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SOURCE_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+
+# FUNCTIONS
+
 function_exists() {
     declare -f -F $1 > /dev/null
     return $?
 }
 
-# save for later use
-start_seconds="$(date +%s)"
-PROV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# FUNCTIONS
-
-network_detection() {
-  # Make an HTTP request to google.com to determine if outside access is available
-  # to us. If 3 attempts with a timeout of 5 seconds are not successful, then we'll
-  # skip a few things further in provisioning rather than create a bunch of errors.
+is_internet_available() {
+  # Make an HTTP request to google.com to determine if outside access is available.
+  # Fails, if 3 attempts with a timeout of 5 seconds are not successful
   if [[ "$(wget --tries=3 --timeout=5 --spider --recursive --level=2 http://google.com 2>&1 | grep 'connected')" ]]; then
     echo "Network connection detected..."
     return 1
@@ -35,12 +37,20 @@ network_detection() {
   fi
 }
 
-network_check() {
-  if [[ "$(network_detection)" != "1" ]]; then
-    return ""
-  else
-  	return 1
+run_install() {
+  if ! is_internet_available ; then
+    return
   fi
+  # Check if a function exists, otherwise install as package
+  for pkg in "${install_list[@]}"; do
+    if function_exists "install_$pkg"; then
+      $("install_$pkg")
+    else
+      package_check_list+=($pkg)
+    fi
+  done
+
+  package_install
 }
 
 if ! function_exists summary; then
@@ -54,16 +64,14 @@ fi
 
 # source os specific files
 if [ -f /etc/os-release ]; then
-  . /etc/os-release
+  source /etc/os-release
 
   if [[ "$NAME" == "CentOS Linux" ]]; then
-		for f in $PROV_DIR/centos/*.sh; do source $f; done
+		for f in $HELPER_DIR/centos/*.sh; do source $f; done
   fi
 fi
 
 # source other files
-for f in $PROV_DIR/all/*.sh; do source $f; done
+for f in $HELPER_DIR/all/*.sh; do source $f; done
 
-if [ -d $PROV_DIR/private ]; then
-  for f in $PROV_DIR/private/*.sh; do source $f; done
-fi
+for f in $(find "$SOURCE_DIR" -name 'install_*.sh'); do source $f; done

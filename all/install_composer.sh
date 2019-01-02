@@ -1,5 +1,5 @@
 
-composer_install() {
+install_composer() {
   # create bin dir if it does not exist yet
   mkdir -p /usr/local/bin
 

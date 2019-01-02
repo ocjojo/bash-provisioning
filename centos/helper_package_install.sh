@@ -5,9 +5,9 @@
 # set to install. It also allows us to easily comment out or add single
 # packages. We set the array as empty to begin with so that we can append
 # individual packages to it as required.
-yum_package_install_list=()
+package_install_list=()
 
-not_installed() {
+is_not_installed() {
   rpm -q "$1" 2>&1 | grep -q 'not installed'
   # returns 0 if string 'not installed' is found, truthy value otherwise
   return "$?"
@@ -19,9 +19,9 @@ package_check() {
   local pkg
 
   for pkg in "${package_check_list[@]}"; do
-    if not_installed "${pkg}"; then
+    if is_not_installed "${pkg}"; then
       echo " *" "$pkg" [not installed]
-      yum_package_install_list+=($pkg)
+      package_install_list+=($pkg)
     else
       rpm -q "${pkg}"
     fi
@@ -31,7 +31,7 @@ package_check() {
 package_install() {
   package_check
 
-  if [[ ${#yum_package_install_list[@]} = 0 ]]; then
+  if [[ ${#package_install_list[@]} = 0 ]]; then
     echo -e "No yum packages to install.\n"
   else
     # Update all of the package references before installing anything
@@ -40,7 +40,7 @@ package_install() {
 
     # Install required packages
     echo "Installing yum packages..."
-    yum -y install ${yum_package_install_list[@]}
+    yum -y install ${package_install_list[@]}
 
     # Remove unnecessary packages
     echo "Removing unnecessary packages..."

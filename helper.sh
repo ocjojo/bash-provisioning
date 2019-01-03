@@ -25,6 +25,13 @@ function_exists() {
     return $?
 }
 
+is_on_host() {
+  local HOST_IP=$(getent hosts "$1" | awk '{ print $1 }')
+  ifconfig 2>&1 | grep -q $HOST_IP
+  # returns 0 if IP is found in ifconfig, truthy value otherwise
+  return "$?"
+}
+
 is_internet_available() {
   # Make an HTTP request to google.com to determine if outside access is available.
   # Fails, if 3 attempts with a timeout of 5 seconds are not successful

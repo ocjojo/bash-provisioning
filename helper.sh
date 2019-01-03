@@ -25,26 +25,15 @@ function_exists() {
     return $?
 }
 
-is_on_host() {
-  if ! function_exists getent; then
-    echo "getent not found, assuming to be on local"
-    return "1"
-  fi
-  local HOST_IP=$(getent hosts "$1" | awk '{ print $1 }')
-  ifconfig 2>&1 | grep -q $HOST_IP
-  # returns 0 if IP is found in ifconfig, truthy value otherwise
-  return "$?"
-}
-
 is_internet_available() {
   # Make an HTTP request to google.com to determine if outside access is available.
   # Fails, if 3 attempts with a timeout of 5 seconds are not successful
   if [[ "$(wget --tries=3 --timeout=5 --spider --recursive --level=2 http://google.com 2>&1 | grep 'connected')" ]]; then
     echo "Network connection detected..."
-    return 1
+    return 0
   else
     echo "Network connection not detected. Unable to reach google.com..."
-    return 0
+    return 1
   fi
 }
 

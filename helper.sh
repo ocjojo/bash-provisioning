@@ -26,6 +26,10 @@ function_exists() {
 }
 
 is_on_host() {
+  if ! function_exists getent; then
+    echo "getent not found, assuming to be on local"
+    return "1"
+  fi
   local HOST_IP=$(getent hosts "$1" | awk '{ print $1 }')
   ifconfig 2>&1 | grep -q $HOST_IP
   # returns 0 if IP is found in ifconfig, truthy value otherwise
